@@ -34,22 +34,14 @@ script.on_event(defines.events.on_player_selected_area, function(event)
 
   for _, list in pairs(pickups) do
     for k,v in pairs(list) do
-      Util.setChestFilter(v.chest, v.source, false)
+      Chest.setItemFilterFromSource(v.chest, v.source, false)
     end
   end
   for _, list in pairs(drops) do
     for k,v in pairs(list) do
-      Util.setChestFilter(v.chest, v.source, true)
+      Chest.setItemFilterFromSource(v.chest, v.source, true)
     end
   end
-
-  -- Update pipes too.
-  table.each(player.surface.find_entities_filtered{name = Config.PIPE_IN_NAME, area = event.area}, function(v)
-    Pipe.updateFluidFilter(v)
-  end)
-  table.each(player.surface.find_entities_filtered{name = Config.PIPE_OUT_NAME, area = event.area}, function(v)
-    Pipe.updateFluidFilter(v)
-  end)
 end)
 
 script.on_event(defines.events.on_player_dropped_item, function(event)

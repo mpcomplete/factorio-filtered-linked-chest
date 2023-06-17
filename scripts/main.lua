@@ -1,7 +1,7 @@
 local Position = require('__stdlib__/stdlib/area/position')
 local Area = require('__stdlib__/stdlib/area/area')
 local table = require('__stdlib__/stdlib/utils/table')
-local Util = require('util')
+require('util')
 
 -- From https://github.com/mrvn/factorio-example-entity-with-tags
 script.on_event(defines.events.on_player_setup_blueprint, function(event)
@@ -28,7 +28,7 @@ script.on_event(defines.events.on_player_setup_blueprint, function(event)
         local id = bp_entity.entity_number
         local entity = map[id]
         if entity then
-          bp.set_blueprint_entity_tag(id, "filter", Util.getNameFromId(entity.link_id))
+          bp.set_blueprint_entity_tag(id, "filter", Chest.getNameFromId(entity.link_id))
         else
           game.print("missing mapping for bp_entity " .. id .. ":" .. bp_entity.name)
         end
@@ -95,7 +95,6 @@ function onBuiltEntity(event)
   local entity = event.created_entity
   if entity and entity.valid then
     Chest.onBuiltEntity(event, entity)
-    Pipe.onBuiltEntity(event, entity)
   end
 end
 
@@ -103,45 +102,31 @@ script.on_event(defines.events.on_built_entity, onBuiltEntity)
 script.on_event(defines.events.on_robot_built_entity, onBuiltEntity)
 script.on_event(defines.events.script_raised_built, onBuiltEntity)
 
-script.on_event("zy-uni-paste-alt", function(event)
+script.on_event("zy-unichest-paste-alt", function(event)
   local player = game.players[event.player_index]
-  Util.setChestFilter(player.selected, player.entity_copy_source, true)
+  Chest.setItemFilterFromSource(player.selected, player.entity_copy_source, true)
 end)
 
 script.on_event(defines.events.on_entity_settings_pasted, function(event)
   local player = game.players[event.player_index]
-  Util.setChestFilter(event.destination, event.source, false)
+  Chest.setItemFilterFromSource(event.destination, event.source, false)
 end)
 
 function initGui(player)
   Chest.destroyGui(player)
   Chest.buildGui(player)
-  Pipe.destroyGui(player)
-  Pipe.buildGui(player)
 end
 
 script.on_event(defines.events.on_gui_opened, function(event)
   local player = game.get_player(event.player_index)
   if not player or not event.entity then return end
-  game.print("gui opened " .. event.entity.name)
-  if event.entity.name == Config.CHEST_NAME then Chest.openGui(player, event.entity)
-  elseif Config.isPipeName(event.entity.name) then Pipe.openGui(player, event.entity)
-  end
+  if event.entity.name == Config.CHEST_NAME then Chest.openGui(player, event.entity) end
 end)
 
 script.on_init(function(event)
   global.nameToId = {}
   for i, player in pairs(game.players) do
     initGui(player)
-  end
-  if remote.interfaces["PickerDollies"] and remote.interfaces["PickerDollies"]["dolly_moved_entity_id"] then
-    script.on_event(remote.call("PickerDollies", "dolly_moved_entity_id"), Pipe.onMovedEntity)
-  end
-end)
-
-script.on_load(function(event)
-  if remote.interfaces["PickerDollies"] and remote.interfaces["PickerDollies"]["dolly_moved_entity_id"] then
-    script.on_event(remote.call("PickerDollies", "dolly_moved_entity_id"), Pipe.onMovedEntity)
   end
 end)
 

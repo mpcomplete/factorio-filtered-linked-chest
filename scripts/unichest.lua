@@ -3,13 +3,13 @@ local Area = require('__stdlib__/stdlib/area/area')
 local table = require('__stdlib__/stdlib/utils/table')
 local Util = require('util')
 
-Chest = {}
+Chest = Chest or {}
 
 function Chest.onBuiltEntity(event, entity)
   if entity.name ~= Config.CHEST_NAME then return end
   local tagFilter = event.tags and event.tags["filter"]   -- Extract filter from a blueprint tag
 
-  if entity.link_id == 0 and tagFilter == nil and global.lastLinkId == nil then
+  if entity.link_id == 0 and tagFilter == nil and global.lastItemFilter == nil then
       -- Ensure a valid filter for this chest. Will only happen for the first chest placed.
       for k, v in pairs(game.item_prototypes) do
         tagFilter = k
@@ -17,23 +17,22 @@ function Chest.onBuiltEntity(event, entity)
       end
   end
   if tagFilter then
-    Util.setLinkId(entity, Util.getOrCreateId(tagFilter), tagFilter)
+    Chest.setItemFilter(entity, tagFilter)
   elseif entity.link_id == 0 then
-    Util.setLinkId(entity, global.lastLinkId, Util.getNameFromId(global.lastLinkId))
+    Chest.setItemFilter(entity, global.lastItemFilter)
   end
 end
 
 function Chest.openGui(player, entity)
   local guiEntity = entity
-  local guiLinkId = guiEntity.link_id
-  local guiFilter = Util.getNameFromId(guiLinkId)
+  local guiFilter = Chest.getNameFromId(guiEntity.link_id)
   player.gui.relative.unichestFrame.itemFilter.elem_value = guiFilter
-  Util.setLinkId(guiEntity, guiLinkId, guiFilter)
+  Chest.setItemFilter(guiEntity, guiFilter)
 
   script.on_event(defines.events.on_tick, function(event)
     -- Reset any changes via the GUIs we can't control (e.g. Link bitmask and manual filtering).
     player.gui.relative.unichestFrame.itemFilter.elem_value = guiFilter
-    Util.setLinkId(guiEntity, guiLinkId, guiFilter)
+    Chest.setItemFilter(guiEntity, guiFilter)
   end)
 
   script.on_event(defines.events.on_gui_elem_changed, function(event)
@@ -41,7 +40,6 @@ function Chest.openGui(player, entity)
     if element ~= player.gui.relative.unichestFrame.itemFilter then return end
     if element.elem_value and element.elem_value ~= "" then
       -- Don't let them set an empty filter.
-      guiLinkId = Util.getOrCreateId(element.elem_value)
       guiFilter = element.elem_value
     end
   end)

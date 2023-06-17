@@ -17,7 +17,7 @@ local function create(protoName)
 
   --- Entity ---
 
-  local inv_size = settings.startup["zy-uni-inventory-size"].value
+  local inv_size = settings.startup["zy-unichest-inventory-size"].value
   local linked_chest = data.raw["linked-container"]["linked-chest"]
   local entity = table.merge(table.deepcopy(data.raw["container"]["iron-chest"]), {
     type = "linked-container",
@@ -37,7 +37,7 @@ local function create(protoName)
 
   --- Recipe ---
 
-  local crafting_cost = settings.startup["zy-uni-crafting-cost"].value
+  local crafting_cost = settings.startup["zy-unichest-crafting-cost"].value
   local ingredients = {
       --crafting_cost == "easy" and {
         { "iron-plate", 20 }
@@ -65,7 +65,7 @@ local function create(protoName)
 
   --- Technology ---
 
-  local research = settings.startup["zy-uni-required-research"].value
+  local research = settings.startup["zy-unichest-required-research"].value
   local tech = {
       -- research == "automation" and {
         count = 10,

@@ -1,22 +1,22 @@
 local table = require('__stdlib__/stdlib/utils/table')
 
-local Util = {}
+Chest = Chest or {}
 
-function Util.getNextId()
+function Chest.getNextId()
   global.nextId = (global.nextId or 0) + 1
   return global.nextId
 end
 
-function Util.getOrCreateId(name)
-  local id = global.nameToId[name]
+function Chest.getOrCreateId(itemName)
+  local id = global.nameToId[itemName]
   if id == nil then
-    id = Util.getNextId()
-    global.nameToId[name] = id
+    id = Chest.getNextId()
+    global.nameToId[itemName] = id
   end
   return id
 end
 
-function Util.getNameFromId(id)
+function Chest.getNameFromId(id)
   for key, value in pairs(global.nameToId) do
     if value == id then
       return key
@@ -25,14 +25,14 @@ function Util.getNameFromId(id)
   return nil
 end
 
--- TODO: move to Chest
-function Util.setLinkId(entity, id, name)
-  global.lastLinkId = id
+function Chest.setItemFilter(entity, itemName)
+  global.lastItemFilter = itemName
 
+  local id = Chest.getOrCreateId(itemName)
   entity.link_id = id
   local inventory = entity.get_output_inventory()
   for i = 1, #inventory do
-    inventory.set_filter(i, name)
+    inventory.set_filter(i, itemName)
   end
 end
 
@@ -85,8 +85,8 @@ function addChestInventoryCycle(cycle, entity, isOutput)
    end
 end
 
--- TODO: move to Chest
-function Util.setChestFilter(dest, source, isOutput)
+-- Sets the chest filter based on a source entity's expected inputs/outputs.
+function Chest.setItemFilterFromSource(dest, source, isOutput)
   if source == nil or dest == nil or not source.valid or not dest.valid then return end
   if dest.name ~= Config.CHEST_NAME then return end
 
@@ -102,7 +102,7 @@ function Util.setChestFilter(dest, source, isOutput)
 
   if #itemCycle == 0 then
     -- link_id might have changed (e.g. if we pasted from a chest), so update our local metadata from it.
-    Util.setLinkId(dest, dest.link_id, Util.getNameFromId(dest.link_id))
+    Chest.setItemFilter(dest, Chest.getNameFromId(dest.link_id))
     return
   end
 
@@ -118,7 +118,5 @@ function Util.setChestFilter(dest, source, isOutput)
     global.lastPasteIdx = 1
   end
 
-  Util.setLinkId(dest, Util.getOrCreateId(item), item)
+  Chest.setItemFilter(dest, item)
 end
-
-return Util
