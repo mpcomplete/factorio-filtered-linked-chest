@@ -55,7 +55,7 @@ function Chest.buildGui(player)
     type = "frame",
     name = "unichestFrame",
     direction = "vertical",
-    caption = { "zy-uni.heading" },
+    caption = { "zy-unichest.heading" },
     anchor = {
       gui = defines.relative_gui_type.linked_container_gui,
       position = defines.relative_gui_position.right
@@ -65,7 +65,7 @@ function Chest.buildGui(player)
   player.gui.relative.unichestFrame.add {
     type = "choose-elem-button",
     name = "itemFilter",
-    tooltip = { "zy-uni.chooseElemTooltip" },
+    tooltip = { "zy-unichest.chooseElemTooltip" },
     style = "slot_button",
     elem_type = "item"
   }
