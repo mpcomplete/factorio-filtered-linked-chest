@@ -1,7 +1,9 @@
-# Factorio Unichest and Unipipe
+# Factorio Unichest
+
+(see also my Unipipe mod: https://mods.factorio.com/mod/Unichest)
 
 This is a mod for [Factorio](http://factorio.com) that adds a container type
-Filtered Linked Chest, each of which globally shares contents with every other
+Unichest, a type of Linked Chest that globally shares contents with every other
 chest of a specified item type.
 
 ![Demonstration 1](action1.gif)
@@ -11,7 +13,7 @@ chest of a specified item type.
 # How to use
 
 Unlock the technology (requirements configurable in Mod Settings -> Startup)
-to access the recipe to craft a Filtered Linked Chest. Crafting cost is also
+to access the recipe to craft a Unichest. Crafting cost is also
 configurable in Mod Settings -> Startup, along with inventory size.
 
 Once placed, the chest is able to hold a single item type. All chests for a

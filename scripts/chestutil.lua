@@ -120,3 +120,5 @@ function Chest.setItemFilterFromSource(dest, source, isOutput)
 
   Chest.setItemFilter(dest, item)
 end
+
+return Chest
