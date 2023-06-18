@@ -9,17 +9,10 @@ function Chest.onBuiltEntity(event, entity)
   if entity.name ~= Config.CHEST_NAME then return end
   local tagFilter = event.tags and event.tags["filter"]   -- Extract filter from a blueprint tag
 
-  if entity.link_id == 0 and tagFilter == nil and global.lastItemFilter == nil then
-      -- Ensure a valid filter for this chest. Will only happen for the first chest placed.
-      for k, v in pairs(game.item_prototypes) do
-        tagFilter = k
-        break
-      end
-  end
   if tagFilter then
     Chest.setItemFilter(entity, tagFilter)
   elseif entity.link_id == 0 then
-    Chest.setItemFilter(entity, global.lastItemFilter)
+    Chest.setItemFilter(entity, global.lastItemFilter or Chest.getNameFromId(entity.link_id))
   end
 end
 

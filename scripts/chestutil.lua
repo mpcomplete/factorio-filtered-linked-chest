@@ -16,13 +16,20 @@ function Chest.getOrCreateId(itemName)
   return id
 end
 
+function getDefaultItem()
+  for k, v in pairs(game.item_prototypes) do
+    return k
+  end
+  return Config.CHEST_NAME
+end
+
 function Chest.getNameFromId(id)
   for key, value in pairs(global.nameToId) do
     if value == id then
       return key
     end
   end
-  return nil
+  return getDefaultItem()
 end
 
 function Chest.setItemFilter(entity, itemName)
