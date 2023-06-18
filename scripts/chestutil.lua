@@ -71,7 +71,7 @@ end
 
 -- Adds ore types for a mining drill.
 function addMinerCycle(cycle, entity, isOutput)
-  if entity.prototype.type == "mining-drill" and game.item_prototypes[entity.mining_target.name] then
+  if entity.prototype.type == "mining-drill" and entity.mining_target and game.item_prototypes[entity.mining_target.name] then
     table.insert(cycle, entity.mining_target.name)
   end
 end
