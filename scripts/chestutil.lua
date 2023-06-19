@@ -23,16 +23,24 @@ function getDefaultItem()
   return Config.CHEST_NAME
 end
 
+function ensureValidItem(itemName)
+  if not itemName or not game.item_prototypes[itemName] then
+    return getDefaultItem()
+  end
+  return itemName
+end
+
 function Chest.getNameFromId(id)
   for key, value in pairs(global.nameToId) do
     if value == id then
-      return key
+      return ensureValidItem(key)
     end
   end
   return getDefaultItem()
 end
 
 function Chest.setItemFilter(entity, itemName)
+  itemName = ensureValidItem(itemName)
   global.lastItemFilter = itemName
 
   local id = Chest.getOrCreateId(itemName)
