@@ -24,11 +24,13 @@ function Chest.openGui(player, entity)
 
   script.on_event(defines.events.on_tick, function(event)
     -- Reset any changes via the GUIs we can't control (e.g. Link bitmask and manual filtering).
+    if not guiEntity.valid then return end
     player.gui.relative.unichestFrame.itemFilter.elem_value = guiFilter
     Chest.setItemFilter(guiEntity, guiFilter)
   end)
 
   script.on_event(defines.events.on_gui_elem_changed, function(event)
+    if not guiEntity.valid then return end
     local element = event.element
     if element ~= player.gui.relative.unichestFrame.itemFilter then return end
     if element.elem_value and element.elem_value ~= "" then

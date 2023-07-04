@@ -1,5 +1,5 @@
 #!/bin/sh
-name=Unichest_1.0.3
+name=Unichest_1.0.4
 ./zip.sh
 mv ${name}.zip 'C:\Users\mpcom\AppData\Roaming\Factorio\mods'
 echo cmd /c '"C:\Program Files\Factorio\bin\x64\factorio.exe"'
