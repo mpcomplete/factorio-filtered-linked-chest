@@ -9,11 +9,28 @@ function Chest.onBuiltEntity(event, entity)
   if entity.name ~= Config.CHEST_NAME then return end
   local tagFilter = event.tags and event.tags["filter"]   -- Extract filter from a blueprint tag
 
+  global.updateFilterQueue = global.updateFilterQueue or {}
   if tagFilter then
-    Chest.setItemFilter(entity, tagFilter)
-  elseif entity.link_id == 0 then
-    Chest.setItemFilter(entity, global.lastItemFilter or Chest.getNameFromId(entity.link_id))
+    table.insert(global.updateFilterQueue, {entity, tagFilter})
+  else
+    table.insert(global.updateFilterQueue, {entity, Chest.getNameFromId(entity.link_id) or global.lastItemFilter})
   end
+end
+
+function tick_event_handler_gui(player, guiEntity, guiFilter)
+  -- Reset any changes via the GUIs we can't control (e.g. Link bitmask and manual filtering).
+  if not guiEntity.valid then return end
+  player.gui.relative.unichestFrame.itemFilter.elem_value = guiFilter
+  Chest.setItemFilter(guiEntity, guiFilter)
+end
+
+function tick_event_handler_update_filter(event)
+  global.updateFilterQueue = global.updateFilterQueue or {}
+  for i, val in pairs(global.updateFilterQueue) do
+    Chest.setItemFilter(val[1], val[2])
+  end
+
+  global.updateFilterQueue = {}
 end
 
 function Chest.openGui(player, entity)
@@ -23,10 +40,8 @@ function Chest.openGui(player, entity)
   Chest.setItemFilter(guiEntity, guiFilter)
 
   script.on_event(defines.events.on_tick, function(event)
-    -- Reset any changes via the GUIs we can't control (e.g. Link bitmask and manual filtering).
-    if not guiEntity.valid then return end
-    player.gui.relative.unichestFrame.itemFilter.elem_value = guiFilter
-    Chest.setItemFilter(guiEntity, guiFilter)
+    tick_event_handler_gui(player, guiEntity, guiFilter)
+    tick_event_handler_update_filter(event)
   end)
 
   script.on_event(defines.events.on_gui_elem_changed, function(event)
@@ -40,7 +55,9 @@ function Chest.openGui(player, entity)
   end)
 
   script.on_event(defines.events.on_gui_closed, function(event)
-    script.on_event(defines.events.on_tick, nil)
+    script.on_event(defines.events.on_tick, function(event)
+      tick_event_handler_update_filter(event)
+    end)
     script.on_event(defines.events.on_gui_elem_changed, nil)
   end)
 end

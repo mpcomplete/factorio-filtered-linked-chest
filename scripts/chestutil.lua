@@ -105,6 +105,11 @@ function Chest.setItemFilterFromSource(dest, source, isOutput)
   if source == nil or dest == nil or not source.valid or not dest.valid then return end
   if dest.name ~= Config.CHEST_NAME then return end
 
+  if dest.name == source.name then
+    Chest.setItemFilter(dest, Chest.getNameFromId(source.link_id))
+    return
+  end
+
   local itemCycle = {}
   if not isOutput then
     -- Burner fuel and labs are input-only
